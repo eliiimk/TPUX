@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-card {
+            margin-bottom: 20px;
+        }
+        .loader {
+            text-align: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-5 text-center">Produits</h1>
+        <div id="products" class="row">
+            <!-- Les produits seront chargés ici via AJAX -->
+        </div>
+        <div class="loader" id="loader" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+        </div>
+        <nav>
+            <ul id="pagination" class="pagination justify-content-center">
+                <!-- Les pages seront affichées ici -->
+            </ul>
+        </nav>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        const productsPerPage = 12;
+        let currentPage = 1;
+
+        function loadProducts(page) {
+            $('#loader').show(); // Afficher le loader
+            $('#products').empty(); // Effacer les anciens produits
+
+            $.ajax({
+                url: 'get_products.php',
+                type: 'GET',
+                data: { page: page, limit: productsPerPage },
+                success: function(data) {
+                    $('#loader').hide(); // Cacher le loader
+
+                    if (data.error) {
+                        alert('Erreur : ' + data.error);
+                        return;
+                    }
+
+                    const products = data.products;  // On récupère les produits
+                    const totalCount = data.total;   // On récupère le total des produits
+                    const totalPages = Math.ceil(totalCount / productsPerPage); // Nombre de pages
+
+                    products.forEach(product => {
+                        $('#products').append(`
+                            <div class="col-md-4">
+                                <div class="card product-card">
+                                    <img src="${product.image_url}" class="card-img-top" alt="${product.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${product.name}</h5>
+                                        <p class="card-text">${product.description}</p>
+                                        <p class="card-text"><strong>${product.price} €</strong></p>
+                                    </div>
+                                </div>
+                            </div>
+                        `);
+                    });
+
+                    generatePagination(totalPages);
+                },
+                error: function(xhr, status, error) {
+                    $('#loader').hide(); // Cacher le loader
+                    alert('Une erreur est survenue : ' + error);
+                }
+            });
+        }
+
+        function generatePagination(totalPages) {
+            $('#pagination').empty();
+
+            // Bouton "Précédent"
+            $('#pagination').append(`
+                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Précédent</a>
+                </li>
+            `);
+
+            // Numéros de pages
+            for (let i = 1; i <= totalPages; i++) {
+                $('#pagination').append(`
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
+                    </li>
+                `);
+            }
+
+            // Bouton "Suivant"
+            $('#pagination').append(`
+                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Suivant</a>
+                </li>
+            `);
+        }
+
+        function changePage(page) {
+            if (page < 1 || page > Math.ceil(totalCount / productsPerPage)) return;
+            currentPage = page;
+            loadProducts(page);
+        }
+
+        $(document).ready(function() {
+            loadProducts(currentPage);
+        });
+    </script>
+</body>
+</html>
