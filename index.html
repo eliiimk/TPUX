@@ -19,7 +19,7 @@
     <div class="container">
         <h1 class="my-5 text-center">Produits</h1>
         <div id="products" class="row">
-            <!-- Les produits seront chargés ici via AJAX -->
+            
         </div>
         <div class="loader" id="loader" style="display: none;">
             <div class="spinner-border text-primary" role="status">
@@ -28,7 +28,7 @@
         </div>
         <nav>
             <ul id="pagination" class="pagination justify-content-center">
-                <!-- Les pages seront affichées ici -->
+                
             </ul>
         </nav>
     </div>
@@ -39,24 +39,24 @@
         let currentPage = 1;
 
         function loadProducts(page) {
-            $('#loader').show(); // Afficher le loader
-            $('#products').empty(); // Effacer les anciens produits
+            $('#loader').show(); 
+            $('#products').empty(); 
 
             $.ajax({
                 url: 'get_products.php',
                 type: 'GET',
                 data: { page: page, limit: productsPerPage },
                 success: function(data) {
-                    $('#loader').hide(); // Cacher le loader
+                    $('#loader').hide(); 
 
                     if (data.error) {
                         alert('Erreur : ' + data.error);
                         return;
                     }
 
-                    const products = data.products;  // On récupère les produits
-                    const totalCount = data.total;   // On récupère le total des produits
-                    const totalPages = Math.ceil(totalCount / productsPerPage); // Nombre de pages
+                    const products = data.products;  
+                    const totalCount = data.total;   
+                    const totalPages = Math.ceil(totalCount / productsPerPage); 
 
                     products.forEach(product => {
                         $('#products').append(`
@@ -76,7 +76,7 @@
                     generatePagination(totalPages);
                 },
                 error: function(xhr, status, error) {
-                    $('#loader').hide(); // Cacher le loader
+                    $('#loader').hide(); 
                     alert('Une erreur est survenue : ' + error);
                 }
             });
@@ -85,14 +85,14 @@
         function generatePagination(totalPages) {
             $('#pagination').empty();
 
-            // Bouton "Précédent"
+            
             $('#pagination').append(`
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Précédent</a>
                 </li>
             `);
 
-            // Numéros de pages
+            
             for (let i = 1; i <= totalPages; i++) {
                 $('#pagination').append(`
                     <li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -101,7 +101,7 @@
                 `);
             }
 
-            // Bouton "Suivant"
+            
             $('#pagination').append(`
                 <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
                     <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Suivant</a>

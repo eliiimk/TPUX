@@ -1,17 +1,17 @@
 <?php
-require_once 'vendor/autoload.php'; // Assurez-vous que Faker est installé avec Composer
+require_once 'vendor/autoload.php'; 
 
-$faker = Faker\Factory::create(); // Utilise la classe de fakerphp
+$faker = Faker\Factory::create(); 
 
-$pdo = new PDO('mysql:host=localhost;dbname=testdb', 'root', '29092231'); // Changez les paramètres de connexion
+$pdo = new PDO('mysql:host=localhost;dbname=testdb', 'root', '29092231'); 
 
-$images = ['tshirt.png', 'pantalon.png', 'jogging.png', 'sweat.png', 'chaussures.png']; // Liste des images locales
-// Vérifier le nombre de produits existants
+$images = ['tshirt.png', 'pantalon.png', 'jogging.png', 'sweat.png', 'chaussures.png']; 
+
 $stmt = $pdo->query("SELECT COUNT(*) FROM products");
 $currentCount = $stmt->fetchColumn();
 
-// Calculer combien de produits ajouter pour atteindre un total entre 500 et 1000
-$targetCount = rand(500, 1000); // Nombre cible de produits
+
+$targetCount = rand(500, 1000); 
 $productsToAdd = $targetCount - $currentCount;
 
 if ($productsToAdd > 0) {
@@ -19,7 +19,7 @@ if ($productsToAdd > 0) {
         $name = ucfirst($faker->word());
         $description = $faker->sentence(15);
         $price = $faker->randomFloat(2, 5, 500);
-        // Sélectionner une image aléatoire parmi les images locales
+
         $image_url = 'images/' . $images[array_rand($images)];
 
         $stmt = $pdo->prepare("INSERT INTO products (name, description, price, image_url) VALUES (?, ?, ?, ?)");
